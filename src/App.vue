@@ -4,7 +4,8 @@ import { RouterView } from 'vue-router'
 
 <template>
   <header>
-    TODO navegação
+    <router-link :to="{name: 'home'}">Home</router-link>&nbsp;|&nbsp;
+    <router-link :to="{name: 'sprite-creator'}">Sprite Creator</router-link>
   </header>
 
   <RouterView />
