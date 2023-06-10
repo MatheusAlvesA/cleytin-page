@@ -1,6 +1,5 @@
 <template>
     <div class="wrapper">
-        <span>Paleta de cores</span>
         <div class="palette">
             <div class="w-100 d-flex flex-wrap" v-if="lastColors.length > 0">
                 <div
@@ -118,5 +117,6 @@ export default {
     margin-right: 10px;
     margin-bottom: 10px;
     cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
 </style>
