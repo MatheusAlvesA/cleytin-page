@@ -13,7 +13,12 @@
             <span>Cor RGB(5;6;5)</span><br />
             <ColorSelector :modelValue="selectedColor565" :disabled="true" />
           </div>
-          <div class="col-md-6">TODO</div>
+          <div class="col-md-6">
+            <color-palette
+              :selected-color="selectedColor"
+              @selectColor="onColorSelectedFromPalette"
+            />
+          </div>
           <div class="col-md-3">TODO</div>
         </div>
 
@@ -24,13 +29,14 @@
 
 <script>
 import ColorSelector from '@/components/ColorSelector.vue';
+import ColorPalette from '@/components/ColorPalette.vue';
 import { color888To565 } from '@/utils.js';
 
 const maxWidth = 320;
 const maxHeight = 240;
 
 export default {
-  components: { ColorSelector },
+  components: { ColorSelector, ColorPalette },
   data() {
     const pixels = [];
     for (let i = 0; i < maxHeight; i++) {
@@ -53,7 +59,11 @@ export default {
       return color888To565(this.selectedColor);
     },
   },
-  methods: {},
+  methods: {
+    onColorSelectedFromPalette(color) {
+      this.selectedColor = color;
+    },
+  },
   mounted() {}
 }
 </script>
