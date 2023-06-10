@@ -3,8 +3,20 @@
     <div class="card">
       <div class="card-body">
         <h5 class="card-title mb-3">Cores</h5>
-        <span>Cor selecionada</span><br />
-        <ColorSelector v-model="selectedColor" />
+        <div class="row">
+          <div class="col-md-3">
+            <span>Cor selecionada</span><br />
+            <ColorSelector v-model="selectedColor" />
+            <div class="my-3 ps-5">
+              <font-awesome-icon icon="fa-solid fa-arrow-down" />
+            </div>
+            <span>Cor RGB(5;6;5)</span><br />
+            <ColorSelector :modelValue="selectedColor565" :disabled="true" />
+          </div>
+          <div class="col-md-6">TODO</div>
+          <div class="col-md-3">TODO</div>
+        </div>
+
       </div>
     </div>
   </main>
@@ -12,6 +24,7 @@
 
 <script>
 import ColorSelector from '@/components/ColorSelector.vue';
+import { color888To565 } from '@/utils.js';
 
 const maxWidth = 320;
 const maxHeight = 240;
@@ -34,6 +47,11 @@ export default {
       selectedColor: { r: 0, g: 0, b: 0 },
       monochromaticMode: false
     };
+  },
+  computed: {
+    selectedColor565() {
+      return color888To565(this.selectedColor);
+    },
   },
   methods: {},
   mounted() {}
