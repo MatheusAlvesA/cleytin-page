@@ -59,9 +59,10 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
+
+    <ExportBitmap class="mt-5" />
   </main>
 </template>
 
@@ -71,12 +72,13 @@ import ColorPalette from '@/components/ColorPalette.vue';
 import VerticalSwitch from '../components/VerticalSwitch.vue';
 import { color888To565, initializeTooltips } from '@/utils.js';
 import PixelMatrix from '../components/PixelMatrix.vue';
+import ExportBitmap from '../components/ExportBitmap.vue';
 
 const maxWidth = 320;
 const maxHeight = 240;
 
 export default {
-  components: { ColorSelector, ColorPalette, VerticalSwitch, PixelMatrix },
+  components: { ColorSelector, ColorPalette, VerticalSwitch, PixelMatrix, ExportBitmap },
   data() {
     const pixels = [];
     for (let i = 0; i < maxHeight; i++) {
