@@ -16,8 +16,10 @@
             height: `${10*zoom}px`,
             backgroundColor: colorToString(colorMode ? pixel : pixelMonochromeColor(pixel))
           }"
-          @mouseover="mouseOverPixel(rowIndex, columnIndex)"
+          @mouseover.passive="mouseOverPixel(rowIndex, columnIndex)"
+          @mousedown.passive="mouseDownPixel($event.button, rowIndex, columnIndex)"
           draggable="false"
+          ondragstart="return false;"
         ></div>
       </div>
     </div>
@@ -94,6 +96,14 @@ export default {
         this.$emit('unsetPixel', {i, j});
       }
     },
+    mouseDownPixel(button, i, j) {
+      if(button === 0) {
+        this.$emit('setPixel', {i, j});
+      }
+      if(button === 2) {
+        this.$emit('unsetPixel', {i, j});
+      }
+    },
     handleMouseDown(event) {
       if(event.button === 0) {
         this.mbl = true;
@@ -158,12 +168,12 @@ export default {
     };
   },
   mounted() {
-    document.addEventListener('mousedown', this.handleMouseDown);
-    document.addEventListener('mouseup', this.handleMouseUp);
+    document.addEventListener('mousedown', this.handleMouseDown, { passive: true });
+    document.addEventListener('mouseup', this.handleMouseUp, { passive: true });
   },
   unmounted() {
-    document.removeEventListener('mousedown', this.handleMouseDown);
-    document.removeEventListener('mouseup', this.handleMouseUp);
+    document.removeEventListener('mousedown', this.handleMouseDown, { passive: true });
+    document.removeEventListener('mouseup', this.handleMouseUp, { passive: true });
   }
 }
 </script>

@@ -26,7 +26,15 @@
               </div>
               <font-awesome-icon icon="fa-solid fa-arrow-down" />
               <div>
-                <span>Cor RGB(5;6;5)</span><br />
+                <span>
+                  Cor RGB(5;6;5)
+                  <font-awesome-icon
+                    icon="fa-solid fa-info"
+                    data-bs-toggle="tooltip"
+                    style="color: rgb(5, 191, 219);"
+                    data-bs-title="A tela do Cleytin usa um padrão de cores com 5 bits para o vermelho (R), 6 bits para o verde (G) e 5 bits para o azul (B)."
+                  />
+                </span><br />
                 <ColorSelector :modelValue="selectedColor565" :disabled="true" />
               </div>
             </div>
@@ -61,7 +69,7 @@
 import ColorSelector from '@/components/ColorSelector.vue';
 import ColorPalette from '@/components/ColorPalette.vue';
 import VerticalSwitch from '../components/VerticalSwitch.vue';
-import { color888To565 } from '@/utils.js';
+import { color888To565, initializeTooltips } from '@/utils.js';
 import PixelMatrix from '../components/PixelMatrix.vue';
 
 const maxWidth = 320;
@@ -108,6 +116,8 @@ export default {
       this.pixels[i].splice(j, 1, { r: 255, g: 255, b: 255});
     }
   },
-  mounted() {}
+  mounted() {
+    initializeTooltips();
+  }
 }
 </script>
