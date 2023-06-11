@@ -32,14 +32,85 @@
 </template>
 
 <script>
-import { makeid } from '@/utils';
+import { makeid, equalColors } from '@/utils';
 
 export default {
-  props: {},
-  emits: [],
+  props: {
+    pixels: {
+      type: Array,
+      required: true
+    },
+    width: {
+      type: Number,
+      required: true
+    },
+    height: {
+      type: Number,
+      required: true
+    },
+    colorMode: {
+      type: Boolean,
+      required: true
+    },
+    selectedColor: {
+      type: Object,
+      required: true
+    }
+  },
   computed: {
     code() {
-      return 'int x = 10;';
+      return this.colorMode ? this.codeColor : this.codeMono;
+    },
+    codeMono() {
+      const bufferDeclaration = this.codeBufferMono
+      const code = `
+
+CEBitmap bitmap = CEBitmap();
+bitmap->setBuffer(buff);
+bitmap->setHeight(${this.height});
+bitmap->setWidth(${this.width});
+bitmap->setBaseColor({${this.selectedColor.r}, ${this.selectedColor.g}, ${this.selectedColor.b}});`;
+      return bufferDeclaration + code;
+    },
+    codeBufferMono() {
+      let bufferDeclaration = 'const uint8_t buff[] = {\n  ';
+      for (let i = 0; i < this.height; i++) {
+        const pixelRow = this.pixels[i];
+        let byte = 0;
+        let bitsShifted = 0;
+        let writtenBytesOnLine = 0;
+        for(let j = 0; j < this.width; j++) {
+          const color = pixelRow[j];
+          if(!equalColors(color, {r: 255, g: 255, b: 255})) {
+            byte |= 1;
+          }
+
+          if(bitsShifted === 7) {
+            bufferDeclaration += `0x${byte.toString(16)}, `;
+            byte = 0;
+            bitsShifted = 0;
+            writtenBytesOnLine++;
+          } else {
+            byte = byte << 1;
+            bitsShifted++;
+          }
+
+          if(writtenBytesOnLine === 10) {
+            bufferDeclaration += '\n  ';
+            writtenBytesOnLine = 0;
+          }
+        }
+        if(bitsShifted !== 0) {
+          byte = byte << (7 - bitsShifted);
+          bufferDeclaration += `0x${byte.toString(16)}, `;
+        }
+      }
+      bufferDeclaration = bufferDeclaration.slice(0, -2);
+      bufferDeclaration += '\n};';
+      return bufferDeclaration;
+    },
+    codeColor() {
+      return '//TODO';
     }
   },
   data() {
@@ -59,7 +130,6 @@ export default {
       }, 2000);
     }
   },
-  mounted() {}
 }
 </script>
 

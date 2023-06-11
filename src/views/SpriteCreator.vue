@@ -62,7 +62,13 @@
       </div>
     </div>
 
-    <ExportBitmap class="mt-5" />
+    <ExportBitmap class="mt-5"
+      :pixels="pixels"
+      :width="width"
+      :height="height"
+      :color-mode="colorMode"
+      :selected-color="selectedColor"
+    />
   </main>
 </template>
 
@@ -106,10 +112,22 @@ export default {
       this.selectedColor = color;
     },
     updateWidth(value) {
-      this.width = value > maxWidth ? maxWidth : value;
+      if(value > maxWidth) {
+        value = maxWidth;
+      }
+      if(value < 1) {
+        value = 1;
+      }
+      this.width = value;
     },
     updateHeight(value) {
-      this.height = value > maxHeight ? maxHeight : value;
+      if(value > maxHeight) {
+        value = maxHeight;
+      }
+      if(value < 1) {
+        value = 1;
+      }
+      this.height = value;
     },
     setPixel({i, j}) {
       this.pixels[i].splice(j, 1, this.selectedColor);
