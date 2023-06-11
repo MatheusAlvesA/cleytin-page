@@ -1,6 +1,19 @@
 <template>
   <main class="container">
-    <div class="card">
+    <PixelMatrix
+      :pixels="pixels"
+      :width="width"
+      :height="height"
+      :color-selected="selectedColor"
+      :color-mode="colorMode"
+      :updateHeight="updateHeight"
+      @update:width="updateWidth"
+      @update:height="updateHeight"
+      @setPixel="setPixel"
+      @unsetPixel="unsetPixel"
+    />
+
+    <div class="card mt-4">
       <div class="card-body">
         <h5 class="card-title mb-3">Cores</h5>
         <div class="row">
@@ -49,12 +62,13 @@ import ColorSelector from '@/components/ColorSelector.vue';
 import ColorPalette from '@/components/ColorPalette.vue';
 import VerticalSwitch from '../components/VerticalSwitch.vue';
 import { color888To565 } from '@/utils.js';
+import PixelMatrix from '../components/PixelMatrix.vue';
 
 const maxWidth = 320;
 const maxHeight = 240;
 
 export default {
-  components: { ColorSelector, ColorPalette, VerticalSwitch },
+  components: { ColorSelector, ColorPalette, VerticalSwitch, PixelMatrix },
   data() {
     const pixels = [];
     for (let i = 0; i < maxHeight; i++) {
@@ -69,7 +83,7 @@ export default {
       width: 10,
       height: 10,
       selectedColor: { r: 0, g: 0, b: 0 },
-      colorMode: false
+      colorMode: true
     };
   },
   computed: {
@@ -81,6 +95,18 @@ export default {
     onColorSelectedFromPalette(color) {
       this.selectedColor = color;
     },
+    updateWidth(value) {
+      this.width = value > maxWidth ? maxWidth : value;
+    },
+    updateHeight(value) {
+      this.height = value > maxHeight ? maxHeight : value;
+    },
+    setPixel({i, j}) {
+      this.pixels[i].splice(j, 1, this.selectedColor);
+    },
+    unsetPixel({i, j}) {
+      this.pixels[i].splice(j, 1, { r: 255, g: 255, b: 255});
+    }
   },
   mounted() {}
 }
