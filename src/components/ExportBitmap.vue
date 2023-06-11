@@ -65,7 +65,7 @@ export default {
       const bufferDeclaration = this.codeBufferMono
       const code = `
 
-CEBitmap bitmap = CEBitmap();
+CEBitmap *bitmap = new CEBitmap();
 bitmap->setBuffer(buff);
 bitmap->setHeight(${this.height});
 bitmap->setWidth(${this.width});
@@ -74,11 +74,11 @@ bitmap->setBaseColor({${this.selectedColor.r}, ${this.selectedColor.g}, ${this.s
     },
     codeBufferMono() {
       let bufferDeclaration = 'const uint8_t buff[] = {\n  ';
+      let writtenBytesOnLine = 0;
+      let byte = 0;
+      let bitsShifted = 0;
       for (let i = 0; i < this.height; i++) {
         const pixelRow = this.pixels[i];
-        let byte = 0;
-        let bitsShifted = 0;
-        let writtenBytesOnLine = 0;
         for(let j = 0; j < this.width; j++) {
           const color = pixelRow[j];
           if(!equalColors(color, {r: 255, g: 255, b: 255})) {
@@ -100,11 +100,11 @@ bitmap->setBaseColor({${this.selectedColor.r}, ${this.selectedColor.g}, ${this.s
             writtenBytesOnLine = 0;
           }
         }
-        if(bitsShifted !== 0) {
+      }
+      if(bitsShifted !== 0) {
           byte = byte << (7 - bitsShifted);
           bufferDeclaration += `0x${byte.toString(16)}, `;
         }
-      }
       bufferDeclaration = bufferDeclaration.slice(0, -2);
       bufferDeclaration += '\n};';
       return bufferDeclaration;
