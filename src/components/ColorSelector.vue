@@ -1,12 +1,14 @@
 <template>
   <div ref="outWrapper" class="out-wrapper" :class="{'disabled': disabled}">
     <input ref="input" class="hidden-input" type="color" :value="parsedColor" @change="parsedColor = $event.target.value" />
-    <div class="wrapper" :style="{'background-color': parsedColor}"></div>
+    <div class="wrapper" :style="{'background-color': parsedColor}">
+      <span :style="{'color': isDarkColor ? 'white' : 'black'}">rgb({{ modelValue.r }}, {{ modelValue.g }}, {{ modelValue.b }})</span>
+    </div>
   </div>
 </template>
 
 <script>
-import { colorObjectToString } from '../utils.js';
+import { colorObjectToString, isDarkColor } from '../utils.js';
 
 export default {
   props: {
@@ -29,6 +31,9 @@ export default {
       set(value) {
         this.$emit('update:modelValue', {r: parseInt(value.slice(1, 3), 16), g: parseInt(value.slice(3, 5), 16), b: parseInt(value.slice(5, 7), 16)});
       }
+    },
+    isDarkColor() {
+      return isDarkColor(this.modelValue);
     }
   },
   mounted() {
@@ -51,6 +56,10 @@ export default {
   border-radius: 8px;
   cursor: pointer;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  text-align: center;
+}
+.wrapper span {
+  font-size: 13px;
 }
 .out-wrapper.disabled .wrapper {
   cursor: default;

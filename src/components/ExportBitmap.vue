@@ -55,6 +55,14 @@ export default {
     selectedColor: {
       type: Object,
       required: true
+    },
+    alphaColor: {
+      type: Object,
+      required: true
+    },
+    monoTransparentMode: {
+      type: Boolean,
+      required: true
     }
   },
   computed: {
@@ -69,7 +77,8 @@ CEBitmap *bitmap = new CEBitmap();
 bitmap->setBuffer(buff);
 bitmap->setHeight(${this.height});
 bitmap->setWidth(${this.width});
-bitmap->setBaseColor({${this.selectedColor.r}, ${this.selectedColor.g}, ${this.selectedColor.b}});`;
+bitmap->setBaseColor({${this.selectedColor.r}, ${this.selectedColor.g}, ${this.selectedColor.b}});
+bitmap->setTransparent(${this.monoTransparentMode ? 'true' : 'false'});`;
       return bufferDeclaration + code;
     },
     codeBufferMono() {
@@ -136,7 +145,8 @@ bitmap->setBaseColor({${this.selectedColor.r}, ${this.selectedColor.g}, ${this.s
 CEColorfulBitmap *bitmap = new CEColorfulBitmap();
 bitmap->setBuffer(buff);
 bitmap->setHeight(${this.height});
-bitmap->setWidth(${this.width});`;
+bitmap->setWidth(${this.width});
+bitmap->setAlphaColor(0x${colorTo565Int(this.alphaColor).toString(16)});`;
       return bufferDeclaration + code;
     }
   },

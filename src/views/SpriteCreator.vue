@@ -19,7 +19,7 @@
         <div class="row">
           <div class="col-md-3">
             <span>Cor selecionada</span><br />
-            <div class="d-flex flex-column justify-content-between align-items-center mt-3" style="min-height: 160px;">
+            <div class="d-flex flex-column justify-content-between align-items-center mt-3" style="min-height: 200px;">
               <div>
                 <span>Clique para selecionar</span><br />
                 <ColorSelector v-model="selectedColor" />
@@ -36,6 +36,31 @@
                   />
                 </span><br />
                 <ColorSelector :modelValue="selectedColor565" :disabled="true" />
+              </div>
+
+              <div v-show="colorMode">
+                <span>
+                  Cor alpha
+                  <font-awesome-icon
+                    icon="fa-solid fa-info"
+                    data-bs-toggle="tooltip"
+                    style="color: rgb(5, 191, 219);"
+                    data-bs-title="A engine não tem suporte a RGBA, mas é possível configurar uma cor para ser transparente. Todo pixel com essa cor será ignorado na hora de renderizar o sprite."
+                  />
+                </span><br />
+                <ColorSelector v-model="alphaColor" />
+              </div>
+              <div v-show="!colorMode" style="min-height: 53px; padding-top: 10px;">
+                <input type="checkbox" class="form-check-input" id="monoTransparentModeInput" :checked="monoTransparentMode" @change="monoTransparentMode = $event.target.checked">
+                <label class="form-check-label" for="monoTransparentModeInput">
+                  &nbsp;Modo transparente
+                  <font-awesome-icon
+                    icon="fa-solid fa-info"
+                    data-bs-toggle="tooltip"
+                    style="color: rgb(5, 191, 219);"
+                    data-bs-title="Os pixels não marcados serão da cor base de fundo da tela, normalmente branco. Selecione essa opção para que eles sejam transparentes."
+                  />
+                </label>
               </div>
             </div>
           </div>
@@ -68,6 +93,8 @@
       :height="height"
       :color-mode="colorMode"
       :selected-color="selectedColor"
+      :alpha-color="alphaColor"
+      :mono-transparent-mode="monoTransparentMode"
     />
   </main>
 </template>
@@ -99,7 +126,9 @@ export default {
       width: 10,
       height: 10,
       selectedColor: { r: 0, g: 0, b: 0 },
-      colorMode: true
+      alphaColor: { r: 0, g: 0, b: 0 },
+      colorMode: true,
+      monoTransparentMode: false,
     };
   },
   computed: {
