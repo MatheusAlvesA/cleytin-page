@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { makeid, equalColors } from '@/utils';
+import { makeid, equalColors, colorTo565Int } from '@/utils';
 
 export default {
   props: {
@@ -109,8 +109,35 @@ bitmap->setBaseColor({${this.selectedColor.r}, ${this.selectedColor.g}, ${this.s
       bufferDeclaration += '\n};';
       return bufferDeclaration;
     },
+    codeBufferColor() {
+      let bufferDeclaration = 'const uint16_t buff[] = {\n  ';
+      let writtenBytesOnLine = 0;
+      for (let i = 0; i < this.height; i++) {
+        const pixelRow = this.pixels[i];
+        for(let j = 0; j < this.width; j++) {
+          const color = pixelRow[j];
+          bufferDeclaration += `0x${colorTo565Int(color).toString(16)}, `;
+
+          writtenBytesOnLine++;
+          if(writtenBytesOnLine === 10) {
+            bufferDeclaration += '\n  ';
+            writtenBytesOnLine = 0;
+          }
+        }
+      }
+      bufferDeclaration = bufferDeclaration.slice(0, -2);
+      bufferDeclaration += '\n};';
+      return bufferDeclaration;
+    },
     codeColor() {
-      return '//TODO';
+      const bufferDeclaration = this.codeBufferColor
+      const code = `
+
+CEColorfulBitmap *bitmap = new CEColorfulBitmap();
+bitmap->setBuffer(buff);
+bitmap->setHeight(${this.height});
+bitmap->setWidth(${this.width});`;
+      return bufferDeclaration + code;
     }
   },
   data() {
