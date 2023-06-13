@@ -66,3 +66,6 @@ export function download(data, filename, type) {
         window.URL.revokeObjectURL(url);  
     }, 0); 
 }
+
+export const maxScreenWidth = 320;
+export const maxScreenHeight = 240;

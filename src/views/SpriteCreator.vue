@@ -102,7 +102,7 @@
         type="button"
         @click="saveState"
       >
-        Salvar rascunho
+        Exportar rascunho
       </button>
       <button
         class="btn btn-success ms-3"
@@ -111,6 +111,10 @@
       >
         Importar rascunho
       </button>
+      <ImportImage
+        class="ms-3"
+        @import="setPixels"
+      />
     </div>
 
     <input type="file" ref="stateFileInput" style="display: none;" @change="importState" />
@@ -121,20 +125,18 @@
 import ColorSelector from '@/components/ColorSelector.vue';
 import ColorPalette from '@/components/ColorPalette.vue';
 import VerticalSwitch from '../components/VerticalSwitch.vue';
-import { color888To565, initializeTooltips, download } from '@/utils.js';
+import { color888To565, initializeTooltips, download, maxScreenWidth, maxScreenHeight } from '@/utils.js';
 import PixelMatrix from '../components/PixelMatrix.vue';
 import ExportBitmap from '../components/ExportBitmap.vue';
-
-const maxWidth = 320;
-const maxHeight = 240;
+import ImportImage from '../components/ImportImage.vue';
 
 export default {
-  components: { ColorSelector, ColorPalette, VerticalSwitch, PixelMatrix, ExportBitmap },
+  components: { ColorSelector, ColorPalette, VerticalSwitch, PixelMatrix, ExportBitmap, ImportImage },
   data() {
     const pixels = [];
-    for (let i = 0; i < maxHeight; i++) {
+    for (let i = 0; i < maxScreenHeight; i++) {
       pixels.push([]);
-      for (let j = 0; j < maxWidth; j++) {
+      for (let j = 0; j < maxScreenWidth; j++) {
         pixels[i].push({ r: 255, g: 255, b: 255 });
       }
     }
@@ -159,8 +161,8 @@ export default {
       this.selectedColor = color;
     },
     updateWidth(value) {
-      if(value > maxWidth) {
-        value = maxWidth;
+      if(value > maxScreenWidth) {
+        value = maxScreenWidth;
       }
       if(value < 1) {
         value = 1;
@@ -168,8 +170,8 @@ export default {
       this.width = value;
     },
     updateHeight(value) {
-      if(value > maxHeight) {
-        value = maxHeight;
+      if(value > maxScreenHeight) {
+        value = maxScreenHeight;
       }
       if(value < 1) {
         value = 1;
@@ -206,6 +208,11 @@ export default {
         this.colorMode = payload.colorMode;
         this.monoTransparentMode = payload.monoTransparentMode;
       }
+    },
+    setPixels(payload) {
+      this.pixels = payload;
+      this.width = payload[0].length;
+      this.height = payload.length;
     }
   },
   mounted() {
