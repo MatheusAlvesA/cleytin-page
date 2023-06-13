@@ -9,6 +9,10 @@ import { RouterView } from 'vue-router'
   </header>
 
   <RouterView />
+
+  <div class="d-flex justify-content-center mt-5">
+    Feito com ❤️ pelo&nbsp;<a href="https://matheusalves.com.br" target="_blank">Matheus</a>
+  </div>
 </template>
 
 <style scoped>

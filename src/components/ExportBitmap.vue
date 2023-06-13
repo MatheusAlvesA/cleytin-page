@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="d-inline">
     <button
       class="btn btn-primary"
       type="button"
@@ -8,7 +8,7 @@
       aria-expanded="false"
       :aria-controls="containerId"
     >
-      Exportar bitmap
+      Exportar C++
     </button>
     <div class="collapse mt-3" :id="containerId">
       <div class="card card-body">

@@ -87,15 +87,33 @@
       </div>
     </div>
 
-    <ExportBitmap class="mt-5"
-      :pixels="pixels"
-      :width="width"
-      :height="height"
-      :color-mode="colorMode"
-      :selected-color="selectedColor"
-      :alpha-color="alphaColor"
-      :mono-transparent-mode="monoTransparentMode"
-    />
+    <div class="mt-5">
+      <ExportBitmap
+        :pixels="pixels"
+        :width="width"
+        :height="height"
+        :color-mode="colorMode"
+        :selected-color="selectedColor"
+        :alpha-color="alphaColor"
+        :mono-transparent-mode="monoTransparentMode"
+      />
+      <button
+        class="btn btn-primary ms-3"
+        type="button"
+        @click="saveState"
+      >
+        Salvar rascunho
+      </button>
+      <button
+        class="btn btn-success ms-3"
+        type="button"
+        @click="importDialog"
+      >
+        Importar rascunho
+      </button>
+    </div>
+
+    <input type="file" ref="stateFileInput" style="display: none;" @change="importState" />
   </main>
 </template>
 
@@ -103,7 +121,7 @@
 import ColorSelector from '@/components/ColorSelector.vue';
 import ColorPalette from '@/components/ColorPalette.vue';
 import VerticalSwitch from '../components/VerticalSwitch.vue';
-import { color888To565, initializeTooltips } from '@/utils.js';
+import { color888To565, initializeTooltips, download } from '@/utils.js';
 import PixelMatrix from '../components/PixelMatrix.vue';
 import ExportBitmap from '../components/ExportBitmap.vue';
 
@@ -163,6 +181,31 @@ export default {
     },
     unsetPixel({i, j}) {
       this.pixels[i].splice(j, 1, { r: 255, g: 255, b: 255});
+    },
+    saveState() {
+      const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
+      const today  = new Date();
+      const dateString = today.toLocaleDateString("pt-BR", options);
+
+      download(JSON.stringify(this.$data), `rascunho_sprite_${dateString}.json`, 'application/json');
+    },
+    importDialog() {
+      this.$refs.stateFileInput.click();
+    },
+    importState(event) {
+      const file = event.target.files[0];
+      var reader = new FileReader();
+      reader.readAsText(file, "UTF-8");
+      reader.onload = (evt) => {
+        const payload = JSON.parse(evt.target.result);
+        this.pixels = payload.pixels;
+        this.width = payload.width;
+        this.height = payload.height;
+        this.selectedColor = payload.selectedColor;
+        this.alphaColor = payload.alphaColor;
+        this.colorMode = payload.colorMode;
+        this.monoTransparentMode = payload.monoTransparentMode;
+      }
     }
   },
   mounted() {
