@@ -1,16 +1,24 @@
 <template>
   <div class="d-inline">
     <button
-      class="btn btn-primary"
+      class="btn btn-primary me-3"
       type="button"
       data-bs-toggle="collapse"
-      :data-bs-target="'#' + containerId"
       aria-expanded="false"
-      :aria-controls="containerId"
+      @click="togleCpp"
     >
       Exportar C++
     </button>
-    <div class="collapse mt-3" :id="containerId">
+    <button
+      class="btn btn-primary"
+      type="button"
+      data-bs-toggle="collapse"
+      aria-expanded="false"
+      @click="togleBase64"
+    >
+      Exportar Base64
+    </button>
+    <div class="collapse mt-3" :class="{'show': showCpp}">
       <div class="card card-body">
         <div class="text-end p-2">
           <font-awesome-icon
@@ -18,7 +26,7 @@
             icon="fa-solid fa-copy"
             style="font-size: 20px;
             cursor: pointer;"
-            @click="copy"
+            @click="() => copy(code)"
           />
           <font-awesome-icon v-else icon="fa-solid fa-check" style="font-size: 20px;" />
         </div>
@@ -28,11 +36,26 @@
         />
       </div>
     </div>
+    <div class="collapse mt-3" :class="{'show': showBase64}">
+      <div class="card card-body">
+        <div class="text-end p-2">
+          <font-awesome-icon
+            v-if="!copyCompleted"
+            icon="fa-solid fa-copy"
+            style="font-size: 20px;
+            cursor: pointer;"
+            @click="() => copy(base64Code)"
+          />
+          <font-awesome-icon v-else icon="fa-solid fa-check" style="font-size: 20px;" />
+        </div>
+        {{ base64Code }}
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { makeid, equalColors, colorTo565Int } from '@/utils';
+import { equalColors, colorTo565Int, arrayBufferToBase64 } from '@/utils';
 
 export default {
   props: {
@@ -68,6 +91,49 @@ export default {
   computed: {
     code() {
       return this.colorMode ? this.codeColor : this.codeMono;
+    },
+    base64Code() {
+      if(this.colorMode) {
+        const buffer = [];
+        for (let i = 0; i < this.height; i++) {
+          const pixelRow = this.pixels[i];
+          for(let j = 0; j < this.width; j++) {
+            const color = pixelRow[j];
+            const color565 = colorTo565Int(color);
+            buffer.push((color565 & 0xFF00) >> 8);
+            buffer.push((color565 & 0xFF) >> 8);
+          }
+        }
+        return arrayBufferToBase64(buffer);
+      }
+
+      let byte = 0;
+      let bitsShifted = 0;
+      const buffer = [];
+      for (let i = 0; i < this.height; i++) {
+        const pixelRow = this.pixels[i];
+        for(let j = 0; j < this.width; j++) {
+          const color = pixelRow[j];
+          if(!equalColors(color, {r: 255, g: 255, b: 255})) {
+            byte |= 1;
+          }
+
+          if(bitsShifted === 7) {
+            buffer.push(byte);
+            byte = 0;
+            bitsShifted = 0;
+          } else {
+            byte = byte << 1;
+            bitsShifted++;
+          }
+        }
+      }
+      if(bitsShifted !== 0) {
+          byte = byte << (7 - bitsShifted);
+          buffer.push(byte);
+      }
+
+      return arrayBufferToBase64(buffer);
     },
     codeMono() {
       const bufferDeclaration = this.codeBufferMono
@@ -152,19 +218,28 @@ bitmap->setAlphaColor(0x${colorTo565Int(this.alphaColor).toString(16)});`;
   },
   data() {
     return {
-      containerId: makeid(5),
-      copyCompleted: false
+      copyCompleted: false,
+      showCpp: false,
+      showBase64: false
     };
   },
   methods: {
-    async copy() {
+    async copy(text) {
       this.copyCompleted = false;
-      await navigator.clipboard.writeText(this.code);
+      await navigator.clipboard.writeText(text);
       this.copyCompleted = true;
 
       setTimeout(() => {
         this.copyCompleted = false;
       }, 2000);
+    },
+    togleCpp() {
+      this.showCpp = !this.showCpp;
+      this.showBase64 = false;
+    },
+    togleBase64() {
+      this.showBase64 = !this.showBase64;
+      this.showCpp = false;
     }
   },
 }

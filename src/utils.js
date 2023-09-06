@@ -67,5 +67,15 @@ export function download(data, filename, type) {
     }, 0); 
 }
 
+export function arrayBufferToBase64(buffer) {
+    var binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+}
+
 export const maxScreenWidth = 320;
 export const maxScreenHeight = 240;
