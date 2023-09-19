@@ -1,5 +1,11 @@
 <template>
-  <div ref="outWrapper" class="out-wrapper" :class="{'disabled': disabled}">
+  <div
+    ref="outWrapper"
+    class="out-wrapper"
+    :class="{'disabled': disabled}"
+    @mouseup.right="parsedColor = '#000000'"
+    oncontextmenu="return false;"
+  >
     <input ref="input" class="hidden-input" type="color" :value="parsedColor" @change="parsedColor = $event.target.value" />
     <div class="wrapper" :style="{'background-color': parsedColor}">
       <span :style="{'color': isDarkColor ? 'white' : 'black'}">rgb({{ modelValue.r }}, {{ modelValue.g }}, {{ modelValue.b }})</span>
